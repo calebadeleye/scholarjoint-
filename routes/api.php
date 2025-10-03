@@ -60,3 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Show single issue details with its journal
     Route::get('/issues/{id}', [IssueController::class, 'show']);
 });
+
+
+Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
+    ->name('verification.send');
+
