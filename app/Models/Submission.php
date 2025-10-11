@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Submission extends Model
 {
+    protected $fillable = ['title','abstract','user_id','conference_id'];
 
     public function user()
     {
@@ -15,6 +16,16 @@ class Submission extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function conference()
+    {
+        return $this->belongsTo(Conference::class);
+    }
+
+    public function authors()
+    {
+        return $this->hasMany(SubmissionAuthor::class);
     }
 
 }

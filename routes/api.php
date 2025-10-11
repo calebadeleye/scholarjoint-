@@ -1,17 +1,23 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\IssueController;
+use App\Http\Controllers\ConferenceController; 
+use App\Http\Controllers\SubmissionController;
 
 // ====================== AUTH ======================
 // Register new user
 Route::post('/register', [AuthController::class, 'register']);
 // Login user
 Route::post('/login', [AuthController::class, 'login']);
+
+ // ====================== ADMIN ROUTES ======================
+    // create conference
+Route::resource('/conference', ConferenceController::class);
+
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -22,11 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ====================== SUBMISSIONS ======================
     // List all submissions for logged-in user
-    Route::get('/submissions', [SubmissionController::class, 'index']);
-    // Create a new submission
-    Route::post('/submissions', [SubmissionController::class, 'store']);
-    // Show a single submission (by ID)
-    Route::get('/submissions/{id}', [SubmissionController::class, 'show']);
+    Route::resource('/submission',SubmissionController::class);
 
     // ====================== REVIEWS ======================
     // Assign a reviewer to a submission (Admin/Editor only)
