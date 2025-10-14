@@ -30,13 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // List all submissions for logged-in user
     Route::resource('/submission',SubmissionController::class);
 
-    // ====================== REVIEWS ======================
-    // Assign a reviewer to a submission (Admin/Editor only)
-    Route::post('/submissions/{id}/assign-reviewer', [ReviewController::class, 'assignReviewer']);
-    // Submit review for a submission
-    Route::post('/submissions/{id}/review', [ReviewController::class, 'submitReview']);
-    // Update submission status (accepted/rejected etc.)
-    Route::post('/submissions/{id}/status', [ReviewController::class, 'updateStatus']);
+    // ====================== AUTHENTICATED REVIEWS ======================
+   // Send invite to review
+    Route::post('/invite/{submission}', [ReviewController::class, 'assignReviewer']);
 
     // ====================== PAYMENTS ======================
     // Create a new payment record
@@ -63,6 +59,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/issues/{id}', [IssueController::class, 'show']);
 });
 
+// ====================== REVIEWS ======================
+// Post review
+    Route::post('/comment/{token}', [ReviewController::class, 'comment']);
 
 Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
     ->name('verification.send');
