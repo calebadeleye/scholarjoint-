@@ -8,6 +8,7 @@ use App\Models\Submission;
 use Illuminate\Support\Str;
 use App\Mail\ReviewInviteMail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\ReviewNotificationMail;
 
 class ReviewController extends Controller
 {
@@ -103,28 +104,36 @@ class ReviewController extends Controller
         ]);
     }
 
+
     public function comment(Request $request, $token)
     {
-        $review = Review::where('token', $token)->firstOrFail();
+        $review = Review::with('submission.conference.user')->where('token', $token)->firstOrFail();
 
         $request->validate([
             'comment' => 'required|string|max:1000',
         ]);
 
         try {
+            // Update review comment
             $review->update(['comment' => $request->comment]);
+
+            // Update submission status
+            $review->submission->update(['status' => 'under_review']);
+
+            // Get the admin (conference creator)
+            $admin = $review->submission->conference->user;
+
+            // Queue the email to admin
+            Mail::to($admin->email)->queue(new ReviewNotificationMail($review));
 
             return redirect()
                 ->back()
-                ->with('success', 'Comment saved successfully. Thank you for your review.');
+                ->with('success', 'Comment saved and notification sent to the conference admin successfully.');
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'An error occurred while saving your comment. Please try again.');
+                ->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
-
-
-
 
 }

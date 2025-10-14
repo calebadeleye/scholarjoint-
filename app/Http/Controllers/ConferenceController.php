@@ -51,6 +51,7 @@ class ConferenceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'accronym' => 'required|string',
@@ -60,6 +61,7 @@ class ConferenceController extends Controller
             'fullpaper_deadline' => 'nullable|date',
             'review_deadline' => 'nullable|date',
             'camera_ready_deadline' => 'nullable|date',
+            'requires_payment_before_submission' => 'boolean',
             'fee' => 'nullable|numeric',
             'rules' => 'nullable|string',
             'tracks' => 'required|array',
@@ -71,6 +73,7 @@ class ConferenceController extends Controller
 
             // 1️⃣ Create the conference
             $conference = Conference::create([
+                'user_id' => $validated['user_id'],
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'abstract_deadline' => $validated['abstract_deadline'] ?? null,
@@ -80,6 +83,7 @@ class ConferenceController extends Controller
                 'location' => $validated['location'] ?? null,
                 'organiser' => $validated['organiser'] ?? null,
                 'accronym' => $validated['accronym'] ?? null,
+                'requires_payment_before_submission' => $validated['requires_payment_before_submission'] ?? false,
                 'fee' => $validated['fee'] ?? 0,
                 'rules' => $validated['rules'] ?? null,
             ]);

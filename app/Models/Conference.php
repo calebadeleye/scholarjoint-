@@ -20,10 +20,17 @@ class Conference extends Model
         'accronym',
         'organiser',
         'location',
+        'user_id',
     ];
 
     public function tracks()
     {
         return $this->hasMany(Track::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

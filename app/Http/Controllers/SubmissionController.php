@@ -47,10 +47,21 @@ class SubmissionController extends Controller
             'authors.*.is_corresponding' => 'boolean',
         ]);
 
-        // Create submission
+        $conference = Conference::findOrFail($validated['conference_id']);
+
+        // 🧾 If conference requires payment before submission
+        if ($conference->requires_payment_before_submission && $conference->fee > 0) {
+            return response()->json([
+                'status' => 'payment_required',
+                'message' => 'Payment is required before submitting your abstract.',
+                'payment_url' => route('conference.payment', ['conference_id' => $conference->id]),
+                'fee' => $conference->fee,
+            ], 403);
+        }
+
+        // Otherwise, allow submission
         $submission = Submission::create($validated);
 
-        // Attach authors
         foreach ($validated['authors'] as $authorData) {
             $submission->authors()->create($authorData);
         }
@@ -61,6 +72,7 @@ class SubmissionController extends Controller
             'data' => $submission->load('authors')
         ], 201);
     }
+
 
 
     /**
